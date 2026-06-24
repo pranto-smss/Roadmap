@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>git init career — the 60-commit roadmap</title>
+<style>
+  :root{
+    --bg: #0d1117;
+    --panel: #11161d;
+    --line: #232b35;
+    --text: #c9d1d9;
+    --muted: #6e7681;
+    --green: #3fb950;
+    --green-dim: #1f6f33;
+    --amber: #d29922;
+    --red: #f85149;
+    --blue: #58a6ff;
+    --mono: "SF Mono", "JetBrains Mono", "Fira Code", Consolas, monospace;
+    --sans: "Segoe UI", Inter, system-ui, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.6;
+  }
+  a{color:var(--blue);text-decoration:none;}
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    border-bottom:1px solid var(--line);
+    background:var(--panel);
+    padding:14px 24px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:var(--mono);
+    font-size:13px;
+    color:var(--muted);
+    position:sticky;
+    top:0;
+    z-index:50;
+  }
+  .topbar .dot{width:10px;height:10px;border-radius:50%;background:var(--red);}
+  .topbar .dot:nth-child(2){background:var(--amber);}
+  .topbar .dot:nth-child(3){background:var(--green);}
+  .topbar .path{margin-left:8px;}
+
+  /* ---------- hero ---------- */
+  .hero{
+    max-width:920px;
+    margin:0 auto;
+    padding:64px 24px 32px;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    color:var(--green);
+    font-size:13px;
+    letter-spacing:.5px;
+  }
+  .hero h1{
+    font-family:var(--mono);
+    font-size:clamp(28px,5vw,44px);
+    margin:10px 0 14px;
+    color:#f0f3f6;
+    letter-spacing:-0.5px;
+  }
+  .hero h1 .cursor{
+    display:inline-block;
+    width:10px;height:1em;
+    background:var(--green);
+    vertical-align:-2px;
+    animation:blink 1s steps(2) infinite;
+  }
+  @keyframes blink{50%{opacity:0;}}
+  .hero p.lede{
+    color:var(--muted);
+    font-size:16px;
+    max-width:680px;
+  }
+  .identity{
+    margin-top:24px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--panel);
+    padding:16px 18px;
+    font-family:var(--mono);
+    font-size:13px;
+  }
+  .identity .row{display:flex;gap:10px;padding:3px 0;}
+  .identity .k{color:var(--muted);width:90px;flex:none;}
+  .identity .v{color:var(--text);}
+  .identity .v.email{color:var(--green);}
+
+  /* ---------- commit graph nav ---------- */
+  .graph{
+    max-width:920px;
+    margin:0 auto 8px;
+    padding:0 24px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .graph a{
+    font-family:var(--mono);
+    font-size:12px;
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:6px 12px;
+    color:var(--muted);
+    transition:.15s;
+  }
+  .graph a:hover{border-color:var(--green);color:var(--green);}
+
+  /* ---------- stage sections ---------- */
+  .stage{
+    max-width:920px;
+    margin:0 auto;
+    padding:56px 24px 8px;
+    border-top:1px dashed var(--line);
+  }
+  .stage-head{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-bottom:6px;
+  }
+  .stage-num{
+    font-family:var(--mono);
+    color:var(--bg);
+    background:var(--green);
+    font-weight:700;
+    font-size:13px;
+    padding:3px 9px;
+    border-radius:4px;
+  }
+  .stage-head h2{
+    font-family:var(--mono);
+    font-size:22px;
+    color:#f0f3f6;
+    margin:0;
+  }
+  .stage-sub{
+    color:var(--muted);
+    font-size:14px;
+    margin:0 0 28px;
+    max-width:680px;
+  }
+  .branch-tag{
+    display:inline-block;
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--blue);
+    border:1px solid #1c3a5e;
+    background:#0f1c2e;
+    border-radius:4px;
+    padding:1px 7px;
+    margin-left:2px;
+  }
+
+  /* ---------- project list ---------- */
+  .commits{
+    position:relative;
+    margin-left:10px;
+    padding-left:26px;
+    border-left:2px solid var(--line);
+  }
+  .commit{
+    position:relative;
+    padding-bottom:26px;
+  }
+  .commit:last-child{padding-bottom:4px;}
+  .commit::before{
+    content:"";
+    position:absolute;
+    left:-32px;
+    top:4px;
+    width:11px;height:11px;
+    border-radius:50%;
+    background:var(--bg);
+    border:2px solid var(--green-dim);
+  }
+  .commit.lvl-hard::before{border-color:var(--amber);}
+  .commit.lvl-extreme::before{border-color:var(--red);}
+
+  .commit-head{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .idx{
+    font-family:var(--mono);
+    color:var(--muted);
+    font-size:12px;
+  }
+  .commit-head h3{
+    font-size:16px;
+    margin:0;
+    color:#f0f3f6;
+    font-weight:600;
+  }
+  p.orig{
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:var(--muted);
+    margin:2px 0 0;
+    font-style:italic;
+  }
+  .diff{
+    font-family:var(--mono);
+    font-size:11px;
+    padding:1px 7px;
+    border-radius:3px;
+    text-transform:uppercase;
+    letter-spacing:.4px;
+  }
+  .diff.easy{color:var(--green);border:1px solid var(--green-dim);}
+  .diff.med{color:var(--amber);border:1px solid #5c4a14;}
+  .diff.hard{color:#ff9580;border:1px solid #6e2a22;}
+  .commit p{
+    margin:6px 0 6px;
+    color:var(--text);
+    font-size:14.5px;
+  }
+  .skills{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted);
+  }
+  .skills b{color:#8b949e;font-weight:600;}
+
+  /* ---------- checklist / setup ---------- */
+  .checklist{
+    list-style:none;
+    margin:0;
+    padding:0;
+  }
+  .checklist li{
+    display:flex;
+    gap:10px;
+    padding:9px 0;
+    border-bottom:1px solid var(--line);
+    font-size:14.5px;
+  }
+  .checklist li:last-child{border-bottom:none;}
+  .checklist .box{
+    flex:none;
+    width:16px;height:16px;
+    margin-top:3px;
+    border:2px solid var(--muted);
+    border-radius:3px;
+  }
+  code, .code{
+    font-family:var(--mono);
+    background:#1c2128;
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:1px 6px;
+    font-size:13px;
+    color:#e3b341;
+  }
+  pre{
+    font-family:var(--mono);
+    background:#1c2128;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:16px;
+    overflow-x:auto;
+    font-size:13px;
+    color:#a5d6ff;
+    line-height:1.7;
+  }
+  pre .c{color:var(--muted);}
+
+  /* ---------- repo naming card ---------- */
+  .grid2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+    margin:18px 0 6px;
+  }
+  @media (max-width:640px){.grid2{grid-template-columns:1fr;}}
+  .card{
+    border:1px solid var(--line);
+    background:var(--panel);
+    border-radius:8px;
+    padding:16px 18px;
+  }
+  .card h4{
+    margin:0 0 8px;
+    font-family:var(--mono);
+    font-size:13px;
+    color:var(--green);
+  }
+  .card p, .card li{font-size:13.5px;color:var(--muted);}
+
+  /* ---------- footer ---------- */
+  footer{
+    max-width:920px;
+    margin:60px auto 0;
+    padding:30px 24px 60px;
+    border-top:1px dashed var(--line);
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted);
+  }
+  .progress-wrap{
+    max-width:920px;margin:0 auto;padding:0 24px;
+  }
+  .progress-bar{
+    height:6px;width:100%;background:var(--line);border-radius:3px;overflow:hidden;margin-top:18px;
+  }
+  .progress-bar span{
+    display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--green),var(--blue));
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+  <span class="path">~/pranto.smss.dev/roadmap.html</span>
+</div>
+
+<div class="hero">
+  <div class="eyebrow">// 60 commits to a portfolio</div>
+  <h1>git init career<span class="cursor"></span></h1>
+  <p class="lede">
+    A clean-slate plan: new email, new GitHub account, 60 small projects across six stages —
+    HTML → CSS → JavaScript → Frontend → Backend → Fullstack. Every stage has 10 projects,
+    and within each stage, project 10 is meaningfully harder than project 1.
+  </p>
+
+  <div class="identity">
+    <div class="row"><span class="k">email</span><span class="v email">pranto.smss.dev@gmail.com</span></div>
+    <div class="row"><span class="k">github</span><span class="v">create with the address above → verify → set a clean username</span></div>
+    <div class="row"><span class="k">repos</span><span class="v">60 total — one per project, public, README required</span></div>
+    <div class="row"><span class="k">cadence</span><span class="v">aim for 1 project every 2–5 days depending on difficulty</span></div>
+  </div>
+</div>
+
+<div class="graph">
+  <a href="#setup">00 — setup</a>
+  <a href="#html">01 — HTML</a>
+  <a href="#css">02 — CSS</a>
+  <a href="#js">03 — JavaScript</a>
+  <a href="#frontend">04 — Frontend</a>
+  <a href="#backend">05 — Backend</a>
+  <a href="#fullstack">06 — Fullstack</a>
+  <a href="#rules">rules</a>
+</div>
+
+<!-- SETUP -->
+<section class="stage" id="setup">
+  <div class="stage-head">
+    <span class="stage-num">00</span>
+    <h2>Account &amp; repo setup</h2>
+  </div>
+  <p class="stage-sub">Do this once, before commit 01. Five minutes now saves a messy profile later.</p>
+
+  <ul class="checklist">
+    <li><span class="box"></span>Create the gail <code>pranto.smss.dev@gmail.com</code> and verify it.</li>
+    <li><span class="box"></span>Sign up at github.com with that email. Pick a username you'd be fine putting on a resume (e.g. <code>pranto-smss</code>).</li>
+    <li><span class="box"></span>Add a short bio + a real (or neutral) avatar — empty profiles read as inactive.</li>
+    <li><span class="box"></span>Enable two-factor auth on the new account immediately.</li>
+    <li><span class="box"></span>Create one "meta" repo named <code>roadmap</code> or <code>learning-log</code> to track progress (you can even host this very page there as <code>index.html</code> via GitHub Pages).</li>
+    <li><span class="box"></span>Set a consistent commit identity: <code>git config user.email "pranto.smss.dev@gmail.com"</code></li>
+  </ul>
+
+  <div class="grid2">
+    <div class="card">
+      <h4>repo naming</h4>
+      <p>Use <code>stage-number-project-name</code>, e.g. <code>01-04-pricing-table</code>. It sorts cleanly on your profile and signals progression to anyone browsing.</p>
+    </div>
+    <div class="card">
+      <h4>every repo needs</h4>
+      <p>A short README (what it is, what you practiced, a live demo link via GitHub Pages/Netlify/Vercel if applicable), and a license is optional but tidy.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HTML -->
+<section class="stage" id="html">
+  <div class="stage-head">
+    <span class="stage-num">01</span>
+    <h2>HTML</h2>
+    <span class="branch-tag">branch: html-foundations</span>
+  </div>
+  <p class="stage-sub">Pure structure and semantics. No styling rabbit holes yet — resist the urge to make it pretty.</p>
+
+  <div class="commits">
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">01.1</span><h3>About/Me</h3><span class="diff easy">easy</span></div>
+      <p class="orig">was: Personal bio page</p>
+      <p>One page: heading, photo placeholder, paragraph about you, a list of interests.</p>
+      <div class="skills"><b>practice:</b> headings, p, img, ul/li</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">01.2</span><h3>Grandma's Kitchen</h3><span class="diff easy">easy</span></div>
+      <p class="orig">was: Recipe page</p>
+      <p>Title, ingredients list, numbered steps, a footer with source/credit.</p>
+      <div class="skills"><b>practice:</b> ol vs ul, sectioning, blockquote</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">01.3</span><h3>Paper Trail</h3><span class="diff easy">easy</span></div>
+      <p class="orig">was: Simple resume / CV page</p>
+      <p>Sections for experience, education, skills — using proper heading hierarchy.</p>
+      <div class="skills"><b>practice:</b> heading levels, address, time</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">01.4</span><h3>Longform</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Article with embedded media</p>
+      <p>Blog-style article containing an image with caption, an embedded video, and a pull-quote.</p>
+      <div class="skills"><b>practice:</b> figure/figcaption, video, cite</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">01.5</span><h3>Table for One</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Restaurant menu with sections</p>
+      <p>Multi-category menu (starters/mains/desserts) using nav anchors to jump between sections.</p>
+      <div class="skills"><b>practice:</b> nav, id anchors, definition lists for price/desc</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">01.6</span><h3>Welcome Aboard</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Sign-up form (no styling, no JS)</p>
+      <p>Real form with text, email, password, radio, checkbox, select, and proper validation attributes.</p>
+      <div class="skills"><b>practice:</b> form, label/for, fieldset, required, pattern</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">01.7</span><h3>Spec Sheet</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Product comparison table</p>
+      <p>Table comparing 3+ products across many attributes, with merged header cells.</p>
+      <div class="skills"><b>practice:</b> table, thead/tbody, colspan/rowspan, scope</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">01.8</span><h3>Three Rooms</h3><span class="diff hard">hard</span></div>
+      <p class="orig">was: Multi-page mini-site (3 pages)</p>
+      <p>Home/About/Contact linked together with a shared nav, breadcrumbs, and consistent landmarks.</p>
+      <div class="skills"><b>practice:</b> header/main/footer landmarks, relative linking, breadcrumb nav</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">01.9</span><h3>Open Roles</h3><span class="diff hard">hard</span></div>
+      <p class="orig">was: Accessible job-listing page</p>
+      <p>List of job postings using correct ARIA roles, skip-link, alt text discipline, and screen-reader-only text where needed.</p>
+      <div class="skills"><b>practice:</b> aria-label, skip links, tabindex, semantic accessibility</div>
+    </div>
+
+    <div class="commit lvl-hard">
+      <div class="commit-head"><span class="idx">01.10</span><h3>Rich Snippet</h3><span class="diff hard">hard</span></div>
+      <p class="orig">was: Structured-data recipe/product page (SEO-ready)</p>
+      <p>A page that passes Google's Rich Results test: full meta tags, Open Graph tags, and embedded JSON-LD schema — zero CSS/JS, structure and metadata only.</p>
+      <div class="skills"><b>practice:</b> meta tags, og: tags, JSON-LD schema.org markup</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CSS -->
+<section class="stage" id="css">
+  <div class="stage-head">
+    <span class="stage-num">02</span>
+    <h2>CSS</h2>
+    <span class="branch-tag">branch: css-foundations</span>
+  </div>
+  <p class="stage-sub">Take stage-01 pages and restyle, or build new ones — focus shifts to layout, responsiveness, and visual systems.</p>
+
+  <div class="commits">
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">02.1</span><h3>About/Me, Restyled</h3><span class="diff easy">easy</span></div>
+      <p class="orig">was: Style the bio page</p>
+      <p>Apply a color palette, font pairing, and spacing scale to project 01.1.</p>
+      <div class="skills"><b>practice:</b> selectors, box model, font-family/weight</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">02.2</span><h3>Tiered</h3><span class="diff easy">easy</span></div>
+      <p class="orig">was: Pricing cards (3-column)</p>
+      <p>Three pricing tiers side by side with a highlighted "popular" card.</p>
+      <div class="skills"><b>practice:</b> flexbox, box-shadow, hover states</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">02.3</span><h3>Collapse</h3><span class="diff easy">easy</span></div>
+      <p class="orig">was: Responsive navbar</p>
+      <p>Horizontal nav that collapses to a stacked menu under a breakpoint (pure CSS toggle, no JS).</p>
+      <div class="skills"><b>practice:</b> media queries, checkbox-hack toggle, flex-wrap</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">02.4</span><h3>Contact Sheet</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Photo gallery grid</p>
+      <p>Responsive masonry-like grid of images that reflows from 4 → 2 → 1 columns.</p>
+      <div class="skills"><b>practice:</b> CSS grid, aspect-ratio, object-fit</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">02.5</span><h3>First Impression</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Animated landing page hero</p>
+      <p>Hero section with a subtle entrance animation and a hover-animated CTA button.</p>
+      <div class="skills"><b>practice:</b> @keyframes, transitions, transform</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">02.6</span><h3>Lights On, Lights Off</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Themeable component library page</p>
+      <p>A page of buttons/inputs/badges all styled from CSS variables, with a light/dark toggle (pure CSS).</p>
+      <div class="skills"><b>practice:</b> custom properties, :root, data-attribute theming</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">02.7</span><h3>The Broadsheet</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Magazine-style article layout</p>
+      <p>Multi-column text, drop caps, pull quotes positioned with grid areas.</p>
+      <div class="skills"><b>practice:</b> grid-template-areas, columns, ::first-letter</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">02.8</span><h3>No-Script Tabs</h3><span class="diff hard">hard</span></div>
+      <p class="orig">was: Pure-CSS tabbed interface</p>
+      <p>Working tabs that switch panels using only radio inputs and the sibling selector — no JS.</p>
+      <div class="skills"><b>practice:</b> :checked, general sibling selector, z-index stacking</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">02.9</span><h3>Control Room</h3><span class="diff hard">hard</span></div>
+      <p class="orig">was: Dashboard shell with sticky/scroll regions</p>
+      <p>Sidebar + sticky header + independently scrolling main content panel, fully responsive.</p>
+      <div class="skills"><b>practice:</b> position: sticky, overflow regions, complex grid layout</div>
+    </div>
+
+    <div class="commit lvl-hard">
+      <div class="commit-head"><span class="idx">02.10</span><h3>Scrollytelling</h3><span class="diff hard">hard</span></div>
+      <p class="orig">was: CSS-only scroll-driven storytelling page</p>
+      <p>Long-scroll page with scroll-snap sections and scroll-triggered reveal animations, no JS.</p>
+      <div class="skills"><b>practice:</b> scroll-snap, animation-timeline, view-timeline (progressive enhancement)</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- JS -->
+<section class="stage" id="js">
+  <div class="stage-head">
+    <span class="stage-num">03</span>
+    <h2>JavaScript</h2>
+    <span class="branch-tag">branch: js-foundations</span>
+  </div>
+  <p class="stage-sub">Vanilla JS only for this stage — no frameworks yet. Build real interactivity and logic.</p>
+
+  <div class="commits">
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">03.1</span><h3>Tally</h3><span class="diff easy">easy</span></div>
+      <p class="orig">was: Counter / click tracker</p>
+      <p>Buttons to increment/decrement/reset a number on the page.</p>
+      <div class="skills"><b>practice:</b> event listeners, DOM text updates</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">03.2</span><h3>Doable</h3><span class="diff easy">easy</span></div>
+      <p class="orig">was: To-do list with localStorage</p>
+      <p>Add/remove/check off tasks; list persists across page reloads.</p>
+      <div class="skills"><b>practice:</b> array methods, localStorage, DOM creation</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">03.3</span><h3>Typo Catcher</h3><span class="diff easy">easy</span></div>
+      <p class="orig">was: Live form validator</p>
+      <p>Real-time field validation with inline error messages as the user types.</p>
+      <div class="skills"><b>practice:</b> input events, regex, conditional classes</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">03.4</span><h3>Slideshow</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Image carousel/slider</p>
+      <p>Auto-advancing slider with manual prev/next and dot indicators.</p>
+      <div class="skills"><b>practice:</b> setInterval, state management without a framework</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">03.5</span><h3>Pop Quiz</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Quiz app with scoring</p>
+      <p>Multi-question quiz pulling from a JS array of objects, with a results screen.</p>
+      <div class="skills"><b>practice:</b> array of objects, rendering loops, score logic</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">03.6</span><h3>Skycast</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Weather lookup (calling a public API)</p>
+      <p>Search a city, fetch live weather, render conditions — including loading and error states.</p>
+      <div class="skills"><b>practice:</b> fetch, async/await, error handling</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">03.7</span><h3>Side by Side</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Markdown-ish note editor with live preview</p>
+      <p>Textarea on one side, rendered preview on the other, updating as you type.</p>
+      <div class="skills"><b>practice:</b> string parsing, debounce, innerHTML sanitization basics</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">03.8</span><h3>Boardgame</h3><span class="diff hard">hard</span></div>
+      <p class="orig">was: Drag-and-drop kanban board</p>
+      <p>Cards draggable between columns, state persisted to localStorage.</p>
+      <div class="skills"><b>practice:</b> Drag and Drop API, nested state updates</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">03.9</span><h3>Brick &amp; Ball</h3><span class="diff hard">hard</span></div>
+      <p class="orig">was: Canvas-based mini game (e.g. breakout/snake)</p>
+      <p>A playable game with collision detection, score, and a game-over state.</p>
+      <div class="skills"><b>practice:</b> canvas API, requestAnimationFrame, game loop pattern</div>
+    </div>
+
+    <div class="commit lvl-hard">
+      <div class="commit-head"><span class="idx">03.10</span><h3>Needle</h3><span class="diff hard">hard</span></div>
+      <p class="orig">was: Client-side search with debounced fuzzy filtering over a large dataset</p>
+      <p>Type-ahead search over a few thousand JSON records, with debouncing, highlighting matches, and keyboard navigation through results.</p>
+      <div class="skills"><b>practice:</b> debounce, Web Workers (optional), keyboard event handling, performance</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FRONTEND -->
+<section class="stage" id="frontend">
+  <div class="stage-head">
+    <span class="stage-num">04</span>
+    <h2>Frontend (frameworks)</h2>
+    <span class="branch-tag">branch: frontend-apps</span>
+  </div>
+  <p class="stage-sub">Pick one framework (React is the safest default) and stay with it through this whole stage for consistency.</p>
+
+  <div class="commits">
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">04.1</span><h3>Kit</h3><span class="diff easy">easy</span></div>
+      <p class="orig">was: Component playground (buttons, cards, modals)</p>
+      <p>A small library of reusable styled components with props for variants.</p>
+      <div class="skills"><b>practice:</b> components, props, conditional rendering</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">04.2</span><h3>Ledger</h3><span class="diff easy">easy</span></div>
+      <p class="orig">was: Expense tracker (local state)</p>
+      <p>Add/delete expenses, see a running total and category breakdown.</p>
+      <div class="skills"><b>practice:</b> useState, lists/keys, derived state</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">04.3</span><h3>Lookup</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Movie/recipe search using a public API</p>
+      <p>Search box, results grid, detail view on click, with loading/empty states.</p>
+      <div class="skills"><b>practice:</b> useEffect, data fetching, routing between views</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">04.4</span><h3>Wayfinder</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Multi-page app with client-side routing</p>
+      <p>Real nav between Home/About/Detail pages without full reloads.</p>
+      <div class="skills"><b>practice:</b> React Router (or equivalent), nested routes, params</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">04.5</span><h3>Cartwheel</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Theming + global state app (e.g. shopping cart UI)</p>
+      <p>Cart icon updates from anywhere in the app; theme toggle persists.</p>
+      <div class="skills"><b>practice:</b> Context API, global state, prop drilling avoidance</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">04.6</span><h3>Application Flow</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Form-heavy app with validation library</p>
+      <p>Multi-step form (e.g. job application) with per-step validation and a review step.</p>
+      <div class="skills"><b>practice:</b> form libraries, schema validation, multi-step state</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">04.7</span><h3>Pulse</h3><span class="diff hard">hard</span></div>
+      <p class="orig">was: Animated dashboard with charts</p>
+      <p>Stats dashboard pulling mock or real data into interactive charts.</p>
+      <div class="skills"><b>practice:</b> charting library, derived/memoized data, responsive layout</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">04.8</span><h3>Feedback Loop</h3><span class="diff hard">hard</span></div>
+      <p class="orig">was: Optimistic-UI social feed (mock backend)</p>
+      <p>Post/like/comment with optimistic updates and rollback on simulated failure.</p>
+      <div class="skills"><b>practice:</b> optimistic updates, mock API layer, error rollback</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">04.9</span><h3>Bottomless</h3><span class="diff hard">hard</span></div>
+      <p class="orig">was: Performance-tuned infinite-scroll feed</p>
+      <p>Thousands of items rendered smoothly via virtualization and lazy image loading.</p>
+      <div class="skills"><b>practice:</b> list virtualization, memoization, lazy loading, profiling</div>
+    </div>
+
+    <div class="commit lvl-hard">
+      <div class="commit-head"><span class="idx">04.10</span><h3>Atlas</h3><span class="diff hard">hard</span></div>
+      <p class="orig">was: Component design system + Storybook + accessibility audit</p>
+      <p>A documented, accessible component library with variants, stories, and automated a11y checks — your most "production" feeling frontend repo.</p>
+      <div class="skills"><b>practice:</b> Storybook, design tokens, axe/a11y testing, build tooling</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- BACKEND -->
+<section class="stage" id="backend">
+  <div class="stage-head">
+    <span class="stage-num">05</span>
+    <h2>Backend</h2>
+    <span class="branch-tag">branch: backend-services</span>
+  </div>
+  <p class="stage-sub">Pick one stack (Node + Express is a safe default) and go deep before branching out.</p>
+
+  <div class="commits">
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">05.1</span><h3>Ping</h3><span class="diff easy">easy</span></div>
+      <p class="orig">was: Hello-world REST API</p>
+      <p>A couple of GET routes returning JSON, run locally and tested with curl/Postman.</p>
+      <div class="skills"><b>practice:</b> HTTP basics, routing, JSON responses</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">05.2</span><h3>Scratchpad</h3><span class="diff easy">easy</span></div>
+      <p class="orig">was: CRUD API with an in-memory store</p>
+      <p>Full create/read/update/delete for one resource (e.g. notes) — no DB yet.</p>
+      <div class="skills"><b>practice:</b> REST conventions, status codes, request validation</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">05.3</span><h3>Permanent Record</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: CRUD API backed by a real database</p>
+      <p>Same resource as above, now persisted in SQLite/Postgres/Mongo.</p>
+      <div class="skills"><b>practice:</b> an ORM/driver, schema design, migrations</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">05.4</span><h3>Gatekeeper</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Auth API (signup/login/JWT)</p>
+      <p>Password hashing, login issuing a JWT, and protected routes that require it.</p>
+      <div class="skills"><b>practice:</b> bcrypt, JWT, middleware, protected routes</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">05.5</span><h3>Inbox</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: File upload service</p>
+      <p>Accept image/file uploads, store them (disk or cloud bucket), and serve them back.</p>
+      <div class="skills"><b>practice:</b> multipart form handling, storage, basic security checks</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">05.6</span><h3>Sieve</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Paginated, filterable, sortable API</p>
+      <p>A larger dataset exposed through query params for paging, filtering, and sorting.</p>
+      <div class="skills"><b>practice:</b> query parsing, DB indexing basics, pagination patterns</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">05.7</span><h3>Wire</h3><span class="diff hard">hard</span></div>
+      <p class="orig">was: Real-time API with WebSockets (chat backend)</p>
+      <p>Multiple clients exchanging messages in real time through a WS server.</p>
+      <div class="skills"><b>practice:</b> WebSockets/Socket.io, connection/room management</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">05.8</span><h3>Night Shift</h3><span class="diff hard">hard</span></div>
+      <p class="orig">was: Background jobs + queue (e.g. email/report generation)</p>
+      <p>Heavy tasks offloaded to a queue/worker instead of blocking requests.</p>
+      <div class="skills"><b>practice:</b> job queues (BullMQ/etc), worker processes, retries</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">05.9</span><h3>Hardened</h3><span class="diff hard">hard</span></div>
+      <p class="orig">was: Rate-limited, tested, documented API</p>
+      <p>Same scale as 05.6/07 but now with automated tests, rate limiting, and OpenAPI docs.</p>
+      <div class="skills"><b>practice:</b> integration testing, rate limiting, API documentation</div>
+    </div>
+
+    <div class="commit lvl-hard">
+      <div class="commit-head"><span class="idx">05.10</span><h3>Twin Engines</h3><span class="diff hard">hard</span></div>
+      <p class="orig">was: Microservice pair with internal API + Dockerized deployment</p>
+      <p>Two small services that talk to each other (e.g. orders service calling an inventory service), containerized and deployable together.</p>
+      <div class="skills"><b>practice:</b> service-to-service calls, Docker/Compose, environment config</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FULLSTACK -->
+<section class="stage" id="fullstack">
+  <div class="stage-head">
+    <span class="stage-num">06</span>
+    <h2>Fullstack</h2>
+    <span class="branch-tag">branch: fullstack-products</span>
+  </div>
+  <p class="stage-sub">Wire your frontend stack to your backend stack end-to-end. These should look like real products, not exercises.</p>
+
+  <div class="commits">
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">06.1</span><h3>Doable, Live</h3><span class="diff easy">easy</span></div>
+      <p class="orig">was: Notes app (frontend + your own API)</p>
+      <p>Reuse 04.2's UI patterns but talk to a real backend from stage 05 instead of local state.</p>
+      <div class="skills"><b>practice:</b> connecting frontend to a real API, CORS, env config</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">06.2</span><h3>Members Only</h3><span class="diff easy">easy</span></div>
+      <p class="orig">was: Auth-gated personal dashboard</p>
+      <p>Login/signup flow, protected dashboard route, persisted session.</p>
+      <div class="skills"><b>practice:</b> auth flow end-to-end, token storage, protected routes on the client</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">06.3</span><h3>Press Room</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Blog platform with an admin panel</p>
+      <p>Public blog list/detail pages plus an authenticated admin area to create/edit posts.</p>
+      <div class="skills"><b>practice:</b> role-based access, rich text/markdown storage, image handling</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">06.4</span><h3>Storefront</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: E-commerce product catalog + cart + checkout (mock payments)</p>
+      <p>Browse products, manage a cart, place an order against your own API.</p>
+      <div class="skills"><b>practice:</b> cart state synced with backend, order model, mock payment flow</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">06.5</span><h3>Wire, Live</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Real-time chat app</p>
+      <p>Full chat UI hooked to your 05.7 WebSocket backend, with rooms/DMs.</p>
+      <div class="skills"><b>practice:</b> real-time UI updates, presence indicators, scroll-to-latest</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">06.6</span><h3>Boardgame, Live</h3><span class="diff med">medium</span></div>
+      <p class="orig">was: Project/task management tool (Trello-like)</p>
+      <p>Boards/lists/cards backed by a real database, drag-and-drop synced to the server.</p>
+      <div class="skills"><b>practice:</b> nested resource modeling, optimistic UI + persistence, drag-and-drop sync</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">06.7</span><h3>Slotted</h3><span class="diff hard">hard</span></div>
+      <p class="orig">was: Booking/scheduling system</p>
+      <p>Calendar-based booking with conflict prevention (e.g. appointment slots, room booking).</p>
+      <div class="skills"><b>practice:</b> date/time logic, concurrency-safe booking, calendar UI</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">06.8</span><h3>Pulse, Live</h3><span class="diff hard">hard</span></div>
+      <p class="orig">was: Analytics dashboard with live data pipeline</p>
+      <p>Events ingested by your API, aggregated, and visualized live on a dashboard.</p>
+      <div class="skills"><b>practice:</b> data aggregation, caching, live-updating charts</div>
+    </div>
+
+    <div class="commit">
+      <div class="commit-head"><span class="idx">06.9</span><h3>Org Chart</h3><span class="diff hard">hard</span></div>
+      <p class="orig">was: Multi-tenant SaaS-style app with billing stub</p>
+      <p>Organizations with members/roles, plan tiers, and a (test-mode) payment integration.</p>
+      <div class="skills"><b>practice:</b> multi-tenancy data modeling, Stripe test mode, role permissions</div>
+    </div>
+
+    <div class="commit lvl-extreme">
+      <div class="commit-head"><span class="idx">06.10</span><h3>Flagship</h3><span class="diff hard">capstone</span></div>
+      <p class="orig">was: Capstone: production-style deployed product</p>
+      <p>Combine the hardest pieces from every stage into one polished app: auth, real-time feature, file uploads, tests, CI, and a live deployment with a custom domain or subdomain. This is the repo you link first.</p>
+      <div class="skills"><b>practice:</b> CI/CD, monitoring/logging, full production checklist</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- RULES -->
+<section class="stage" id="rules">
+  <div class="stage-head">
+    <span class="stage-num">∞</span>
+    <h2>Rules to keep the account looking real</h2>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h4>commit honestly</h4>
+      <p>Small, frequent, descriptive commits over a long history beat one giant "final upload" commit. Build each project over 2–4 commits minimum.</p>
+    </div>
+    <div class="card">
+      <h4>deploy every frontend repo</h4>
+      <p>GitHub Pages, Netlify, or Vercel — a live link in the README turns a code dump into a portfolio piece.</p>
+    </div>
+    <div class="card">
+      <h4>write the README first</h4>
+      <p>Before coding, write what the project does and why. It clarifies scope and gives you a finish line.</p>
+    </div>
+    <div class="card">
+      <h4>don't skip the boring ones</h4>
+      <p>The early "easy" projects in each stage exist to build muscle memory — rushing past them shows up as shaky fundamentals later.</p>
+    </div>
+  </div>
+
+  <p style="margin-top:22px;">Suggested terminal flow for kicking off any new project:</p>
+  <pre><span class="c"># inside your projects folder</span>
+mkdir 03-06-weather-app && cd 03-06-weather-app
+git init
+git branch -M main
+echo "# Weather App" >> README.md
+git add . && git commit -m "init: scaffold project"
+gh repo create pranto-smss/03-06-weather-app --public --source=. --push</pre>
+
+</section>
+
+<div class="progress-wrap">
+  <div class="progress-bar"><span style="width:0%"></span></div>
+</div>
+
+<footer>
+  60 projects · 6 stages · 1 GitHub account · pranto.smss.dev@gmail.com<br>
+  print this guide or pin it in your roadmap repo — check items off as you ship.
+</footer>
+
+</body>
+</html>
