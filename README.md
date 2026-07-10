@@ -3,9 +3,9 @@
 ## HTML
 | Project Number | Project Name | Project Details | Project Link | Deployment Link | Done? |
 | :---: | :---: | :---: | :---: | :---: | :---: |
-| 01.1 | About/Me | One page: heading, photo placeholder, paragraph about you, a list of interests. **practice:** headings, p, img, ul/li | [🔗](https://github.com/pranto-smss/About-Me) | [🔗](https://pranto-smss.github.io/About-Me) | ✅ |
-| 01.2 | Grandma's Kitchen | Title, ingredients list, numbered steps, a footer with source/credit. **practice:** ol vs ul, sectioning, blockquote | [🔗](https://github.com/pranto-smss/Grandmas-Kitchen) | [🔗](https://pranto-smss.github.io/Grandmas-Kitchen/) | ✅ |
-| 01.3 | Paper Trail | Sections for experience, education, skills — using proper heading hierarchy. **practice:** heading levels, address, time | [🔗](https://github.com/pranto-smss/Paper-Trail) | [🔗](https://pranto-smss.github.io/Paper-Trail/) | ✅ |
+| 01.1 | About/Me | One page: heading, photo placeholder, paragraph about you, a list of interests. **practice:** headings, p, img, ul/li | [🔗](https://github.com/your-github-username/About-Me) | [🔗](https://your-github-username.github.io/About-Me) | ✅ |
+| 01.2 | Grandma's Kitchen | Title, ingredients list, numbered steps, a footer with source/credit. **practice:** ol vs ul, sectioning, blockquote | [🔗](https://github.com/your-github-username/Grandmas-Kitchen) | [🔗](https://your-github-username.github.io/Grandmas-Kitchen/) | ✅ |
+| 01.3 | Paper Trail | Sections for experience, education, skills — using proper heading hierarchy. **practice:** heading levels, address, time | [🔗](https://github.com/your-github-username/Paper-Trail) | [🔗](https://your-github-username.github.io/Paper-Trail/) | ✅ |
 | 01.4 | Longform | Blog-style article containing an image with caption, an embedded video, and a pull-quote. **practice:** figure/figcaption, video, cite | [🔗](#) | [🔗](#) | ❌ |
 | 01.5 | Table for One | Multi-category menu (starters/mains/desserts) using nav anchors to jump between sections. **practice:** nav, id anchors, definition lists for price/desc | [🔗](#) | [🔗](#) | ❌ |
 | 01.6 | Welcome Aboard | Real form with text, email, password, radio, checkbox, select, and proper validation attributes. **practice:** form, label/for, fieldset, required, pattern | [🔗](#) | [🔗](#) | ❌ |
